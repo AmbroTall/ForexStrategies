@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # data.py
-from __future__ import print_function
 from abc import ABCMeta, abstractmethod
 import datetime
 import os, os.path
@@ -109,7 +108,7 @@ class HistoricCSVDataHandler(DataHandler):
             csv_path = os.path.join(self.csv_dir, f'{symbol}.csv')
             self.symbol_data[symbol] = pd.read_csv(csv_path, header=0, index_col=0, parse_dates=True,
                                                    names=['datetime', 'open', 'high', 'low', 'close', 'volume',
-                                                          'adj_close']).sort_index()
+                                                          'adj_close'])
 
             # Combine the index to pad forward values
             if comb_index is None:
@@ -135,11 +134,13 @@ class HistoricCSVDataHandler(DataHandler):
         """
         Returns the last bar from the latest_symbol list.
         """
-        bars_list = self.latest_symbol_data.get(symbol)
-        if bars_list is None:
+        try:
+            bars_list = self.latest_symbol_data[symbol]
+        except KeyError:
             print("That symbol is not available in the historical data set.")
-            raise KeyError("Symbol not found")
-        return bars_list[-1] if bars_list else None
+            raise
+        else:
+            return bars_list[-1]
 
     def get_latest_bars(self, symbol, N=1):
         """
@@ -190,6 +191,17 @@ class HistoricCSVDataHandler(DataHandler):
                 if bar is not None:
                     self.latest_symbol_data[s].append(bar)
         self.events.put(MarketEvent())
+
+    def get_latest_bar_datetime(self, symbol):
+        """
+        Returns a Python datetime object for the last bar.
+        """
+        bars_list = self.latest_symbol_data.get(symbol)
+        if bars_list is None:
+            raise KeyError("That symbol is not available in the historical data set.")
+
+        return bars_list[-1][0]
+
 
 
 

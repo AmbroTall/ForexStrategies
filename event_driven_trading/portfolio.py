@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # portfolio.py
-from __future__ import print_function
+
 import datetime
 from math import floor
 try:
@@ -111,6 +111,24 @@ class Portfolio(object):
 
         self.all_holdings.append(holdings_data)
 
+    def update_positions_from_fill(self, fill):
+        """
+        Takes a Fill object and updates the position matrix to
+        reflect the new position.
+
+        Parameters:
+        fill - The Fill object to update the positions with.
+        """
+        # Check whether the fill is a buy or sell
+        fill_dir = 0
+        if fill.direction == 'BUY':
+            fill_dir = 1
+        if fill.direction == 'SELL':
+            fill_dir = -1
+
+        # Update positions list with new quantities
+        self.current_positions[fill.symbol] += fill_dir * fill.quantity
+
     def update_holdings_from_fill(self, fill):
         """
         Takes a Fill object and updates the holdings matrix to
@@ -170,6 +188,7 @@ class Portfolio(object):
         """
         if event.type == 'SIGNAL':
             order_event = self.generate_naive_order(event)
+            self.events.put(order_event)
 
     def create_equity_curve_dataframe(self):
         """
@@ -180,17 +199,21 @@ class Portfolio(object):
         curve.set_index('datetime', inplace=True)
         curve['returns'] = curve['total'].pct_change()
         curve['equity_curve'] = (1.0 + curve['returns']).cumprod()
+        curve.dropna(inplace=True)
         self.equity_curve = curve
 
     def output_summary_stats(self):
         """
         Creates a list of summary statistics for the portfolio.
         """
-        total_return = self.equity_curve['equity_curve'][-1]
+        total_return = self.equity_curve['equity_curve'].iloc[-1]
         returns = self.equity_curve['returns']
+        print("Taller", total_return)
+        print("Taller2", returns, "\n")
         pnl = self.equity_curve['equity_curve']
-        sharpe_ratio = create_sharpe_ratio(returns, periods=252 * 60 * 6.5)
+        sharpe_ratio = create_sharpe_ratio(returns, periods=252)
         drawdown, max_dd, dd_duration = create_drawdowns(pnl)
+        print("Taller",drawdown, max_dd, dd_duration)
         self.equity_curve['drawdown'] = drawdown
         stats = [
             ("Total Return", "%0.2f%%" % ((total_return - 1.0) * 100.0)),

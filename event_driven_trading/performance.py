@@ -16,7 +16,6 @@ def create_sharpe_ratio(returns, periods=252):
     """
     return np.sqrt(periods) * (np.mean(returns)) / np.std(returns)
 
-
 def create_drawdowns(pnl):
     """
     Calculate the largest peak-to-trough drawdown of the PnL curve
@@ -38,11 +37,12 @@ def create_drawdowns(pnl):
 
     # Loop over the index range
     for t in range(1, len(idx)):
-        hwm.append(max(hwm[t - 1], pnl[t]))
-        drawdown[t] = (hwm[t] - pnl[t])
-        duration[t] = (0 if drawdown[t] == 0 else duration[t - 1] + 1)
+        hwm.append(max(hwm[t - 1], pnl.iloc[t]))
+        drawdown.iloc[t] = (hwm[t] - pnl.iloc[t])
+        duration.iloc[t] = (0 if drawdown.iloc[t] == 0 else duration.iloc[t - 1] + 1)
 
     max_drawdown = drawdown.max()
     max_drawdown_duration = duration.max()
 
     return drawdown, max_drawdown, max_drawdown_duration
+

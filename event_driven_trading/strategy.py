@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # strategy.py
+
 from abc import ABCMeta, abstractmethod
 import datetime
 try:

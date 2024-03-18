@@ -3,6 +3,8 @@
 # backtest.py
 import datetime
 import pprint
+
+
 try:
     import Queue as queue
 except ImportError:
@@ -155,4 +157,3 @@ class Backtest:
         """
         self._run_backtest()
         self._output_performance()
-

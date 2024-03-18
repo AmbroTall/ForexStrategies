@@ -8,8 +8,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 if __name__ == "__main__":
-    data = pd.io.parsers.read_csv(
-        "equity.csv",
+    current_directory = os.getcwd()
+    csv_dir = os.path.join(current_directory)
+    csv_file_path = "/home/ambrose/PycharmProjects/FTTesting/ForexStrategies/event_driven_trading/equity.csv"
+
+    data = pd.read_csv(
+        csv_file_path,
         header=0,
         parse_dates=True,
         index_col=0
