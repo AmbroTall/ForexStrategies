@@ -91,6 +91,7 @@ if __name__ == "__main__":
     initial_capital = 100000.0
     heartbeat = 0.0
     start_date = datetime.datetime(1990, 1, 1, 0, 0, 0)
+    end_date = datetime.datetime(2002, 1, 1, 0, 0, 0)
     current_directory = os.getcwd()
     csv_dir = os.path.join(current_directory, "intraday")
     if not os.path.exists(csv_dir):
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     # Download historical stock data for each symbol in the symbol list
     for symbol in symbol_list:
         # Download data from yfinance
-        stock_data = yf.download(symbol, start=start_date)
+        stock_data = yf.download(symbol, start=start_date, end=end_date)
 
         # Save data to a CSV file
         csv_file_path = os.path.join(csv_dir, f"{symbol}.csv")
